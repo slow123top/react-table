@@ -43,6 +43,7 @@ class HyTableBody extends Component {
 
     })
   }
+  
   isSelect(index, data) {
     if (this.state.selection) {
       if (this.props.singleSelect) {
