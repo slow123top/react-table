@@ -15,7 +15,7 @@ class HyTable extends Component {
         super(props);
         this.state = {
             selectIndex: -1,
-            selection: undefined
+            selection: {}
         }
     }
     data(props) {
@@ -37,6 +37,21 @@ class HyTable extends Component {
                 return {
                     selection: data,
                     selectIndex: i
+                }
+            } else {
+                // 多选
+                if (this.isSelect(i, data)) {
+                    delete preState.selection[i];
+
+                    return {
+                        selection: preState.selection
+                    }
+                } else {
+                    const temp = {};
+                    temp[i] = data;
+                    return {
+                        selection: Object.assign({}, preState.selection, temp)
+                    }
                 }
             }
         })
@@ -70,14 +85,15 @@ class HyTable extends Component {
             </thead>
             <tbody>
                 {DATA.map((dataItem, index) => {
-                    return (<tr key={index.toString()} className={this.state.selectIndex === index ? 'tr-select' : ''} 
-                    onClick={this.setSelect.bind(this, index, dataItem)}>{
-                        React.Children.map(this.props.children, child => {
-                            return React.cloneElement(child, {
-                                //把父组件的props.name赋值给每个子组件（父组件传值给子组件）
-                                dataItem: dataItem,
-                            })
-                        })}
+                    return (<tr key={index.toString()} className={(this.state.selectIndex === index && this.state.selection === dataItem) || 
+                        this.state.selection[index] === dataItem ? 'tr-select' : ''}
+                        onClick={this.setSelect.bind(this, index, dataItem)}>{
+                            React.Children.map(this.props.children, child => {
+                                return React.cloneElement(child, {
+                                    //把父组件的props.name赋值给每个子组件（父组件传值给子组件）
+                                    dataItem: dataItem,
+                                })
+                            })}
                     </tr>)
                 })}
             </tbody>
